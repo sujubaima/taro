@@ -13,6 +13,7 @@ class UIEvent(object):
 
     always = False
     object = None
+    glob = False
 
 
 class KeyInput(UIEvent):
@@ -67,4 +68,8 @@ class MouseScrollUp(MouseEvent):
 
 
 class MouseScrollDown(MouseEvent):
+    pass
+
+
+class MouseMove(MouseEvent):
     pass

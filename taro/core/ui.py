@@ -153,12 +153,15 @@ class UI(object):
         self.handler(MouseRightReleased, "_mouse_right_released")
         self.handler(MouseScrollUp, "_mouse_scroll_up")
         self.handler(MouseScrollDown, "_mouse_scroll_down")
+        self.handler(MouseMove, "_mouse_moved")
         self.handler(KeyInput, "_key_input")
 
         self.cursor = None
         self._alock = threading.Lock()
         self._ancestor = None
         self._new_cursor = new_cursor
+        self.autofresh = False
+
         self.setup(**kwargs)
         
         if UI.Root is not None and self.parent is None:
@@ -503,13 +506,17 @@ class UI(object):
         UI.Root.refresh()
         curses.doupdate()
 
-    def event(self, evt):
+    def event(self, evt, glob=False):
         if evt.object is None:
             evt.object = self
+        evt.glob = glob
         UIEvent.Queue.put(evt)
 
     def handle(self, evt):
         if evt.__class__ in self.handlers:
+            #func = getattr(self, self.handlers[evt.__class__], None)
+            #if func is not None:
+            #    func(evt)
             self.handlers[evt.__class__](evt)
 
     def handler(self, cls, funcname):

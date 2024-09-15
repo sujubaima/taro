@@ -174,7 +174,24 @@ class Window(Canvas):
         self._mouse_y = evt.pos_y
         self._mouse_x = evt.pos_x
         self._pressed = False
-        self._move_window()
+        #self._move_window()
+        self.locate(self.pos_y_, self.pos_x_)
+
+    def _mouse_moved(self, evt):
+        if not self.draggable:
+            return
+        if not self._pressed:
+            return
+        offset_y = evt.pos_y - self._mouse_y
+        offset_x = evt.pos_x - self._mouse_x
+        offset_y = min(max(offset_y, 0 - self.abs_y), UI.ScreenHeight - self.abs_y - self.height)
+        offset_x = min(max(offset_x, 0 - self.abs_x), UI.ScreenWidth - self.abs_x - self.width)
+        #self.move(offset_y, offset_x)
+        self.pos_y_ = self.pos_y + offset_y
+        self.pos_x_ = self.pos_x + offset_x
+        self._mouse_y = evt.pos_y
+        self._mouse_x = evt.pos_x
+        self.locate(self.pos_y_, self.pos_x_)
 
     def _move_window(self):
         if self.pos_y == self.pos_y_ and self.pos_x == self.pos_x_:

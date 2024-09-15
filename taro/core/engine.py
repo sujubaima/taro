@@ -36,7 +36,9 @@ class InputThread(threading.Thread):
       curses.BUTTON2_PRESSED: MouseScrollDown,
       # 滚轮下滑有特殊键值
       134217728: MouseScrollDown,
-      2097152: MouseScrollDown
+      2097152: MouseScrollDown,
+      # 鼠标移动事件
+      268435456: MouseMove
     }
 
     def __init__(self, *args, **kwargs):
@@ -54,10 +56,13 @@ class InputThread(threading.Thread):
             try:
                 _, x, y, _, state = curses.getmouse()
             except Exception as e:
+                LOG.info("exc: %s" % e)
                 return None
             mousetype = InputThread.MouseMap.get(state)
             if mousetype is None:
+                LOG.info("nONE: %s" % mousetype)
                 return None
+            LOG.info(mousetype)
             return mousetype(y, x)
         else:
             return KeyInput(key)
@@ -67,6 +72,7 @@ class InputThread(threading.Thread):
             evt = self.get()
             if evt is None:
                 continue
+            evt.glob = True
             UIEvent.Queue.put(evt)
 
     def run(self):
@@ -88,9 +94,9 @@ class EventThread(threading.Thread):
                 evt = UIEvent.Queue.get(timeout=1)
             except Exception as e:
                 continue
-            if evt.object is not None:
+            if evt.object is not None and not evt.glob:
                 evt.object.handle(evt)
-            else:
+            elif evt.glob:
                 ctrl_list = []
                 stack = [UI.Root]
                 while len(stack) > 0:
@@ -179,7 +185,7 @@ class UIEngine(object):
         except Exception as e:
             exc = sys.exc_info()
         finally:
-            curses.endwin()
+            #curses.endwin()
             if exc is not None:
                 #traceback.print_exception(*exc)
                 LOG.error("".join(traceback.format_exception(*exc)))
@@ -194,8 +200,9 @@ class UIEngine(object):
         curses.noecho()
         curses.halfdelay(1)
         curses.curs_set(0)
-        #curses.mousemask(-1)
-        curses.mousemask(curses.ALL_MOUSE_EVENTS)
+        curses.mouseinterval(0)
+        curses.mousemask(curses.REPORT_MOUSE_POSITION | curses.ALL_MOUSE_EVENTS)
+        print('\033[?1003h')
         curses.start_color()
         #curses.init_color(99, 255, 50, 150)
         scr.keypad(1)
@@ -221,7 +228,7 @@ class UIEngine(object):
         except Exception as e:
             exc = sys.exc_info()
         finally:
-            curses.endwin()
+            #curses.endwin()
             if exc is not None:
                 traceback.print_exception(*exc)
                 LOG.exception(exc)

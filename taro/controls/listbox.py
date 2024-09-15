@@ -18,10 +18,16 @@ ARROW_DOWN = "▼"
 class ListBox(Scrolled):
 
     class ItemChanged(UIEvent):
-        pass
+
+        item = None
 
     class ItemDoubleClicked(UIEvent):
-        pass
+
+        item = None
+
+    class ItemRightClicked(UIEvent):
+
+        item = None
 
     _selected = None
 
@@ -34,6 +40,7 @@ class ListBox(Scrolled):
 
         self.handler(ListBox.ItemChanged, "item_changed")
         self.handler(ListBox.ItemDoubleClicked, "item_double_clicked")
+        self.handler(ListBox.ItemRightClicked, "item_right_clicked")
 
     @property
     def selected(self):
@@ -52,7 +59,7 @@ class ListBox(Scrolled):
         self.event(ListBox.ItemChanged())
 
     def additem(self, item, binddata=None):
-        item = Label(text=item)
+        item = Label(text=item, fixed=True)
         item.resize(width=max(self._canvas.width, item.width))
         self.addcontrol(item, binddata=binddata)
         self.flag.modified()
@@ -88,6 +95,16 @@ class ListBox(Scrolled):
             return
         self._left_clicked(evt)
 
+    def _mouse_right_released(self, evt):
+        if not self.within(evt.pos_y, evt.pos_x):
+            return
+        self._right_clicked(evt)
+
+    def _mouse_right_clicked(self, evt):
+        if not self.within(evt.pos_y, evt.pos_x):
+            return
+        self._right_clicked(evt)
+
     def _mouse_left_double_clicked(self, evt):
         if not self.within(evt.pos_y, evt.pos_x):
             return
@@ -108,4 +125,20 @@ class ListBox(Scrolled):
         #if changed:
         #    self.item_changed(self, evt)
         if evt.__class__ == MouseLeftDoubleClicked:
-            self.event(ListBox.ItemDoubleClicked())
+            evt_double_clicked = ListBox.ItemDoubleClicked()
+            evt_double_clicked.item = self.selected
+            self.event(evt_double_clicked)
+
+    def _right_clicked(self, evt):
+        changed = False
+        for item in self.items:
+            if not item.active:
+                continue
+            if not item.within(evt.pos_y, evt.pos_x):
+                continue
+            if item != self.selected:
+                self.selected = item
+            break
+        evt_right_clicked = ListBox.ItemRightClicked() 
+        evt_right_clicked.item = self.selected
+        self.event(evt_right_clicked)

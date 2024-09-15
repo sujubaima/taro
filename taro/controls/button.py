@@ -30,13 +30,16 @@ class Button(UI):
         self.handler(Button.ButtonClickedEvent, "clicked")
         self._clicking = False
 
+    def _align_text(self, text):
+        return strutils.align_center(text, self.width - 2)
+
     def resize(self, height=None, width=None):
         """
         Overwrite the resize function of button.
         Button only support one-line mode.
         """
         super(Button, self).resize(width=width)
-        self._text = strutils.align_center(self._raw_text, self.width - 2)
+        self._text = self._align_text(self._raw_text)
 
     @property
     def text(self):
@@ -51,7 +54,7 @@ class Button(UI):
         if self.width < strwidth + 4:
             self.resize(width=strwidth + 4)
         else:
-            self._text = strutils.align_center(self._raw_text, self.width - 2)#self._raw_text
+            self._text = self._align_text(self._raw_text)#self._raw_text
         self.flag.modified()
 
     def paint(self):
