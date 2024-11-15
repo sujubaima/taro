@@ -153,10 +153,73 @@ class Canvas(UI):
             self._shades()
 
     def _paint_border(self):
+        #if self.border == 1:
+        #    self.cursor.cswin_.border()
+        #elif self.border == 2:
+        #    self.cursor.cswin_.box(" ", " ")
+        if self.active:
+            fcolor, attrs = "white", []
+        else:
+            fcolor, attrs = "grey", ["bold"]
+        if self.border > 0:
+            self.cursor.text(
+                "┌", 
+                fcolor=fcolor, 
+                attrs=attrs, 
+                y=-1, 
+                x=-2
+            )
+            self.cursor.text(
+                "┐", 
+                fcolor=fcolor, 
+                attrs=attrs, 
+                y=-1, 
+                x=self.width - self.border_x - 1
+            )
+            self.cursor.text(
+                "└", 
+                fcolor=fcolor, 
+                attrs=attrs, 
+                y=self.height - self.border_y - 1, 
+                x=-2
+            )
+            self.cursor.text(
+                "┘", 
+                fcolor=fcolor, 
+                attrs=attrs, 
+                y=self.height - self.border_y - 1, 
+                x=self.width - self.border_x - 1
+            )
         if self.border == 1:
-            self.cursor.cswin_.border()
-        elif self.border == 2:
-            self.cursor.cswin_.box(" ", " ")
+            self.cursor.text(
+                "─" * (self.width - 2), 
+                fcolor=fcolor, 
+                attrs=attrs, 
+                y=-1, 
+                x=-1
+            )
+            self.cursor.text(
+                "─" * (self.width - 2), 
+                fcolor=fcolor, 
+                attrs=attrs, 
+                y=self.height - self.border_y - 1, 
+                x=-1
+            )
+            for i in range(self.height - 2):
+                self.cursor.text(
+                    "│", 
+                    fcolor=fcolor, 
+                    attrs=attrs, 
+                    y=i, 
+                    x=-2
+                )
+                self.cursor.text(
+                    "│", 
+                    fcolor=fcolor, 
+                    attrs=attrs, 
+                    y=i, 
+                    x=self.width - self.border_x - 1
+                )
 
     def _paint_title(self):
         if self.title is not None:

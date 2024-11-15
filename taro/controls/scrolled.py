@@ -267,8 +267,8 @@ class Scrolled(Canvas):
 
         self.substance = None
 
-        self.scroll_h = ScrollHorizon()
-        self.scroll_v = ScrollVertical()
+        self.scroll_h = ScrollHorizon(visible=False)
+        self.scroll_v = ScrollVertical(visible=False)
 
         self.add(self.scroll_h)
         self.add(self.scroll_v)
