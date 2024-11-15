@@ -2,7 +2,7 @@ import logging
 import threading
 
 from taro.core import UI
-from taro.core import UIEvent
+from taro.core import MouseEvent
 from taro.utils import strutils
 
 
@@ -19,7 +19,7 @@ class Button(UI):
     _raw_text = ""
     _highlight = False
 
-    class ButtonClickedEvent(UIEvent):
+    class ClickedEvent(MouseEvent):
         pass
 
     def setup(self, text):
@@ -27,7 +27,7 @@ class Button(UI):
         self.highlight = False
         self.text = text
         #self.clicked = lambda self, evt: None
-        self.handler(Button.ButtonClickedEvent, "clicked")
+        self.handler(Button.ClickedEvent, "clicked")
         self._clicking = False
 
     def _align_text(self, text):
@@ -103,4 +103,4 @@ class Button(UI):
         self._clicking = False
         self.highlight = False
         #self.clicked(self, Button.ButtonClickedEvent())
-        self.event(Button.ButtonClickedEvent())
+        self.event(Button.ClickedEvent(evt.pos_y, evt.pos_x))

@@ -60,9 +60,7 @@ class InputThread(threading.Thread):
                 return None
             mousetype = InputThread.MouseMap.get(state)
             if mousetype is None:
-                LOG.info("nONE: %s" % mousetype)
                 return None
-            LOG.info(mousetype)
             return mousetype(y, x)
         else:
             return KeyInput(key)
@@ -189,7 +187,7 @@ class UIEngine(object):
             if exc is not None:
                 #traceback.print_exception(*exc)
                 LOG.error("".join(traceback.format_exception(*exc)))
-                time.sleep(5)
+                time.sleep(1)
             curses.endwin()
             UIEngine.shutdown()
 
